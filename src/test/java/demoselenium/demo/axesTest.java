@@ -2,7 +2,6 @@ package demoselenium.demo;
 
 import java.time.Duration;
 import java.util.Set;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.WebDriver;
@@ -19,17 +18,29 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class axesTest {
     @Test
-    public void seleTest() throws InterruptedException{
+    public void seleTest() throws InterruptedException {
         WebDriverManager.chromedriver().setup();
-        WebDriver driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");              // Run Chrome in headless mode
+        options.addArguments("--no-sandbox");            // Bypass OS security model, required for CI
+        options.addArguments("--disable-dev-shm-usage"); // Overcome limited /dev/shm space in CI environments
+
+        WebDriver driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         driver.get("http://money.rediff.com/gainers/bse/daily/groupa");
         driver.manage().window().maximize();
+
         Thread.sleep(3000);
         Set<String> windows = driver.getWindowHandles();
-        Wait<WebDriver> wait = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(30)).pollingEvery(Duration.ofSeconds(2)).ignoring(ElementNotInteractableException.class);
+
+        Wait<WebDriver> wait = new FluentWait<>(driver)
+            .withTimeout(Duration.ofSeconds(30))
+            .pollingEvery(Duration.ofSeconds(2))
+            .ignoring(ElementNotInteractableException.class);
+
         WebElement zuariSele = driver.findElement(By.xpath("//*[text()='Emami']/self::a"));
         System.out.println(zuariSele.getText());
+
         driver.quit();
     }
 
